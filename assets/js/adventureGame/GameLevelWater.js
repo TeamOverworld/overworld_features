@@ -197,35 +197,49 @@ class GameLevelWater {
       hitbox: { widthPercentage: 0.25, heightPercentage: 0.55 }
     };
 
-    function setupRandomMotion(spriteData, yOffset = 0) {
+    function setupRandomMotion(spriteData, yOffset = 0) { // initialises a simple left‑right “wandering” behaviour for one sprite (an element on the page).
       spriteData.direction = { x: Math.random() < 0.5 ? -1 : 1 };
+      // direction.x is either –1 (moving left) or +1 (moving right), chosen randomly.
       spriteData.speed = 5;
+      // speed is hard‑coded to 5 px per tick .
       spriteData.INIT_POSITION = {
         x: Math.random() * (width - 200) + 100,
+      // The x‑value is random but clamped so the sprite starts 100 px in from each edge .
         y: height / 2 + yOffset
+      // The y‑value is halfway down the canvas (height / 2) plus any extra offset passed in.
       };
 
-      setInterval(() => {
+
+      setInterval(() => { // This function is called every 100 ms to update the sprite’s position.
         spriteData.INIT_POSITION.x += spriteData.direction.x * spriteData.speed;
 
         if (spriteData.INIT_POSITION.x < 0) {
           spriteData.INIT_POSITION.x = 0;
           spriteData.direction.x = 1;
         }
+        // If the sprite hits the left edge, lock it to x = 0 and force direction → right. 
         if (spriteData.INIT_POSITION.x > width - 100) {
           spriteData.INIT_POSITION.x = width - 100;
           spriteData.direction.x = -1;
         }
+        // If it reaches width – 100, lock it there and force direction → left. 
+        // These two if statements ensures that the sprite is always fully on‑screen.
+
 
         if (Math.random() < 0.03) {
           spriteData.direction.x *= -1;
         }
 
+        // On about 3 % of ticks, the sprite turns around randomly, so the player can't predict its movement.
+
         const spriteElement = document.getElementById(spriteData.id);
         if (spriteElement) {
           spriteElement.style.transform = spriteData.direction.x === -1 ? "scaleX(-1)" : "scaleX(1)";
+          // scaleX(−1) flips the image so it faces the way it’s moving.
           spriteElement.style.left = spriteData.INIT_POSITION.x + 'px';
+          // left sets the sprite’s pixel position.
           spriteElement.style.top = spriteData.INIT_POSITION.y + 'px';
+          // top sets the sprite’s pixel position.
         }
       }, 100);
     }
